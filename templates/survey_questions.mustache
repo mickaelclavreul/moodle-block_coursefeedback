@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_coursefeedback/show_survey
+    @template block_coursefeedback/survey_questions
 
     This template renders the notification message of a feedback question type schoolgrades.
 
@@ -24,22 +24,20 @@
     }
 
 }}
-<div class="alert alert-info p-4 block_coursefeedback-survey" id="block_coursefeedback-survey-root">
-    <div id="block_coursefeedback-survey-content">
-        {{> block_coursefeedback/survey_questions }}
+
+{{# questions }}
+    <div class="mb-5">
+        {{# type_text }}
+            {{> block_coursefeedback/surveyitems/text }}
+        {{/ type_text }}
+        {{# type_multiplechoice }}
+            {{> block_coursefeedback/surveyitems/multiplechoice }}
+        {{/ type_multiplechoice }}
+        {{# type_singlechoice }}
+            {{> block_coursefeedback/surveyitems/singlechoice }}
+        {{/ type_singlechoice }}
+        {{# type_scalequestion }}
+            {{> block_coursefeedback/surveyitems/scalequestion }}
+        {{/ type_scalequestion }}
     </div>
-    <div class="d-flex mb-3 justify-content-between">
-        <button class="btn btn-secondary" disabled>
-            Back
-        </button>
-        <button class="btn btn-primary">
-            Next
-        </button>
-    </div>
-    <div class="progress mb-3" role="progressbar" aria-hidden="true">
-        <div class="progress-bar" style="width: calc(100% / 5)"></div>
-    </div>
-    <div class="d-flex justify-content-around">
-        <span>Seite 1 / 5</span>
-    </div>
-</div>
+{{/ questions }}

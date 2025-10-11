@@ -50,16 +50,24 @@ class language_manager {
      */
     public static function fetch_strings(array $requests, string $language) {
         global $DB;
-        // TODO respect language.
         [$insql, $inparams] = $DB->get_in_or_equal(array_values($requests), SQL_PARAMS_NAMED);
         $inparams['lang'] = $language;
-        $results = $DB->get_records_select_menu(
+        $records = $DB->get_records_select(
             'block_coursefeedback_texttranslation',
             "lang = :lang AND textid $insql",
             $inparams,
             '',
-            'textid, text'
+            'textid, text, format'
         );
+        $results = [];
+
+        foreach ($records as $record) {
+            $results[$record->textid] = [
+                'text' => $record->text,
+                'format' => $record->format
+            ];
+        }
+
         return $results;
     }
 

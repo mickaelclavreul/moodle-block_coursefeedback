@@ -135,4 +135,95 @@ echo $OUTPUT->render_from_template('block_coursefeedback/edit_survey', $context)
 
 $PAGE->requires->js_call_amd('block_coursefeedback/drag-and-drop-reorder', 'init');
 
+echo '<br><br>';
+echo $OUTPUT->render_from_template('block_coursefeedback/show_survey', [
+    'questions' => [
+        [
+            'questiontext' => 'Which of these have you heard of?',
+            'type_multiplechoice' => true,
+            'surveyitemid' => 2,
+            'options' => [
+                [
+                    'optiontext' => 'Cheese',
+                    'optionid' => 1,
+                ], [
+                    'optiontext' => '2001: A Space Odyssey',
+                    'optionid' => 2,
+                ], [
+                    'optiontext' => 'Windows 11',
+                    'optionid' => 3,
+                ]
+            ]
+        ], [
+            'questiontext' => 'Which one do you like the most?',
+            'type_singlechoice' => true,
+            'surveyitemid' => 3,
+            'options' => [
+                [
+                    'optiontext' => 'Pac-Man',
+                    'optionid' => 1,
+                ], [
+                    'optiontext' => 'Sonic the Hedgehog',
+                    'optionid' => 2,
+                ], [
+                    'optiontext' => 'Dwight D. Eisenhower',
+                    'optionid' => 3,
+                ]
+            ]
+        ], [
+            'questiontext' => 'Did you like this course?',
+            'type_scalequestion' => true,
+            'min_pole' => 'very much no',
+            'max_pole' => 'very much yes',
+            'show_scale' => true,
+            'has_na_option' => true,
+            'na_option' => 'don\'t know',
+            'surveyitemid' => 4,
+            'optionamount' => 5,
+            'options' => [
+                [
+                    'id' => 1,
+                    'text' => 'very much no',
+                ], [
+                    'id' => 2,
+                ], [
+                    'id' => 3,
+                ], [
+                    'id' => 4,
+                ], [
+                    'id' => 5,
+                    'text' => 'very much yes',
+                ]
+            ],
+        ], [
+            'questiontext' => 'Was this course too hard?',
+            'type_scalequestion' => true,
+            'show_scale' => false,
+            'has_na_option' => true,
+            'na_option' => 'don\'t know',
+            'surveyitemid' => 5,
+            'optionamount' => 5,
+            'options' => [
+                [
+                    'id' => 1,
+                    'text' => 'very much no',
+                ], [
+                    'id' => 2,
+                ], [
+                    'id' => 3,
+                ], [
+                    'id' => 4,
+                ], [
+                    'id' => 5,
+                    'text' => 'very much yes',
+                ]
+            ],
+        ], [
+            'questiontext' => 'Anything else to say?',
+            'type_text' => true,
+            'surveyitemid' => 6,
+        ]
+    ],
+]);
+
 echo $OUTPUT->footer();

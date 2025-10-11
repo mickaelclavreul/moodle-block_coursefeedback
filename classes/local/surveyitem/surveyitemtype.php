@@ -82,6 +82,25 @@ abstract class surveyitemtype {
         return $record;
     }
 
+    public function load_questiondata_for(array $surveyitems) {
+        $textids = [];
+        foreach ($surveyitems as $surveyitem) {
+            $surveyitemid = $surveyitem->get('id');
+            $textids[$surveyitemid] = [];
+            if ($textid = $surveyitem->get('textid')) {
+                $textids[$surveyitemid]['question'] = $textid;
+            }
+        }
+        return [$textids, []];
+    }
+
+    public function create_question_structure(array $surveyitems, array $texts, array $additionaldata): array {
+        $template_data = [];
+        foreach ($surveyitems as $surveyitem) {
+
+        }
+    }
+
     /**
      * Get all textids for the given surveyitemids in a nested array.
      * @param array $surveyitemids

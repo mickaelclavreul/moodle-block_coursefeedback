@@ -24,6 +24,8 @@
  */
 namespace block_coursefeedback\local\surveyitem;
 
+use block_coursefeedback\local\manager\language_manager;
+use block_coursefeedback\local\persistent\surveypart;
 use block_coursefeedback\local\surveyitem\info\info;
 use block_coursefeedback\local\surveyitem\multiplechoice\multiplechoice;
 use block_coursefeedback\local\surveyitem\pagebreak\pagebreak;
@@ -68,5 +70,65 @@ class surveyitem_manager {
             throw new coding_exception('Survey element type ' .  $type . ' not found.');
         }
         return self::get_all_surveyitemtypes()[$type];
+    }
+
+    public static function get_templatedata_for_surveypart(surveypart $surveypart, string $language): array {
+        $surveyitems = $surveypart->get_surveyitems();
+        $surveyitems_by_type = [];
+        foreach ($surveyitems as $surveyitem) {
+            $surveyitemtype = $surveyitem->get('surveyitemtype');
+            if (!isset($surveyitems_by_type[$surveyitemtype])) {
+                $surveyitems_by_type[$surveyitemtype] = [];
+            }
+            $surveyitems_by_type[$surveyitemtype][] = $surveyitem;
+        }
+
+        $alladditionaldata = [];
+        $alltextids = [];
+        $uniquetextids = [];
+
+        foreach ($surveyitems_by_type as $surveyitemtype => $surveyitems) {
+            list($textidsperitem, $additionaldata) = self::get_surveyitemtype($surveyitemtype)
+                ->load_questiondata_for($surveyitems);
+            $alladditionaldata[$surveyitemtype] = $additionaldata;
+            $alltextids[$surveyitemtype] = $textidsperitem;
+            foreach ($textidsperitem as $itemid => $textids) {
+                foreach ($textids as $textid) {
+                    $uniquetextids[$textid] = $textid;
+                }
+            }
+        }
+        $strings = language_manager::fetch_strings($uniquetextids, $language);
+        $template_data_by_type = [];
+        foreach ($surveyitems_by_type as $surveyitemtype => $surveyitems) {
+
+            $texts = [];
+
+            foreach ($alltextids[$surveyitemtype] as $itemid => $textids) {
+                $texts[$itemid] = [];
+                foreach ($textids as $key => $textid) {
+                    $texts[$itemid][$key] = $strings[$textid];
+                }
+            }
+            $template_data_by_type[$surveyitemtype] = self::get_surveyitemtype($surveyitemtype)
+                ->create_question_structure($surveyitems, $texts, $alladditionaldata[$surveyitemtype]);
+        }
+
+        $template_data = [];
+        $current_page = [];
+
+        foreach ($surveyitems as $surveyitem) {
+            $surveyitemtype = $surveyitem->get('surveyitemtype');
+            if ($surveyitemtype === 'pagebreak') {
+                $template_data[] = $current_page;
+                $current_page = [];
+                continue;
+            }
+
+            $current_page[] = $template_data_by_type[$surveyitemtype][$surveyitem->get('id')];
+        }
+        $template_data[] = $current_page;
+
+        return $template_data;
     }
 }
