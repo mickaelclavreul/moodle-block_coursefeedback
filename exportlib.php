@@ -257,31 +257,31 @@ class ranking_exporter {
             $answerdata[] = $question->question;
             foreach ($courses as $course) {
                 // Forces to select some fields, since the sql query is hard-coded
-                $answerdata[] = $course->idnumber;
-                $answerdata[] = $course->enroleduserssum;
+                $coursedata = [$course->idnumber];
+                $coursedata[] = $course->enroleduserssum;
                 if($scaleType === 'Classic') {
-                    $answerdata[] = $course->one;
-                    $answerdata[] = $course->two;
-                    $answerdata[] = $course->three;
-                    $answerdata[] = $course->four;
-                    $answerdata[] = $course->five;
-                    $answerdata[] = $course->six;
+                    $coursedata[] = $course->one;
+                    $coursedata[] = $course->two;
+                    $coursedata[] = $course->three;
+                    $coursedata[] = $course->four;
+                    $coursedata[] = $course->five;
+                    $coursedata[] = $course->six;
                 } else if($scaleType === 'Numeric') {
-                    $answerdata[] = $course->one;
-                    $answerdata[] = $course->two;
-                    $answerdata[] = $course->three;
-                    $answerdata[] = $course->four;
+                    $coursedata[] = $course->one;
+                    $coursedata[] = $course->two;
+                    $coursedata[] = $course->three;
+                    $coursedata[] = $course->four;
                 } else {
-                    $answerdata[] = $course->one;
-                    $answerdata[] = $course->two;
-                    $answerdata[] = $course->three;
-                    $answerdata[] = $course->four;
-                    $answerdata[] = $course->five;
+                    $coursedata[] = $course->one;
+                    $coursedata[] = $course->two;
+                    $coursedata[] = $course->three;
+                    $coursedata[] = $course->four;
+                    $coursedata[] = $course->five;
                 }
-                $answerdata[] = $course->avfeedbackresult;
-                $answerdata[] = $course->adjanswerstotal;
-                $answerdata[] = $course->abstentions;
-                $this->csvexportwriter->add_data($answerdata);
+                $coursedata[] = $course->avfeedbackresult;
+                $coursedata[] = $course->adjanswerstotal;
+                $coursedata[] = $course->abstentions;
+                $this->csvexportwriter->add_data(array_merge($answerdata,$coursedata));
             }
         }
         $this->csvexportwriter->download_file();
@@ -299,8 +299,8 @@ class ranking_exporter {
         get_string('course'));
         $this->csvexportwriter->add_data($data);
         // Insert all textanswers for each question.
+        $questionnumber = 0;
         foreach ($questions as $question) {
-            $questionnumber = 0;
             $answerdata[] = ++$questionnumber;
             $answerdata[] = format_string($question->question);
             /*$questiondata = [
@@ -312,8 +312,8 @@ class ranking_exporter {
             // Get textanswers for question.
             $courses = block_coursefeedback_get_courseessay($question->questionid, $feedbackid);
             foreach ($courses as $course) {
-		        array_push($answerdata,$course->idnumber,block_coursefeedback_format_essay($course->textanswer));
-		        $this->csvexportwriter->add_data($answerdata);
+		        $coursedata = [$course->idnumber,block_coursefeedback_format_essay($course->textanswer)];
+		        $this->csvexportwriter->add_data(array_merge($answerdata,$coursedata));
 	        }
         }
 	    $this->csvexportwriter->download_file();
