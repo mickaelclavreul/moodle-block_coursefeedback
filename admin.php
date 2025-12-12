@@ -452,12 +452,8 @@ if ($action === "view") {
                                 }
                             }
                             $question = format_string($question->question);
-                            $listing .= "<div>";
-                            if (strlen($question) > 50 && $p = strpos($question, " ", 50)) {
-                                $listing .= str_replace(" ", "&nbsp;", substr($question, 0, $p) . "&nbsp;[...]");
-                            } else {
-                                $listing .= str_replace(" ", "&nbsp;", $question);
-                            }
+                            
+                            $listing .= "<div>" . $question;
                             $listing .= "</div>\n";
                             $languages .= html_writer::tag("span", $language, ["style" => "padding:0px;"]) . "<br/>\n";
                             $url1 = block_coursefeedback_adminurl("question", "edit", $fid,

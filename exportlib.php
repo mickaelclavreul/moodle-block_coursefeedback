@@ -91,7 +91,7 @@ class feedback_exporter {
         $questionnumber = 0;
         foreach ($questions as $question) {
             $answers = [++$questionnumber];
-            $answers[] = $question->question;
+            $answers[] = block_coursefeedback_format_essay($question->question);
             $answers[] = $course->idnumber;
             // Put questionstring in front of $answerdata and add the data to the csv file
             if ($qanswercounts[$question->questionid]) {
@@ -166,7 +166,7 @@ class essay_exporter {
         $questionnumber = 0;
         foreach ($questions as $question) {
             $answerdata = [++$questionnumber];
-            $answerdata[] = format_string($question->question);
+            $answerdata[] = block_coursefeedback_format_essay($question->question);
             //$this->csvexportwriter->add_data($answerdata);
 
             // Get textanswers for question.
@@ -174,11 +174,11 @@ class essay_exporter {
                 'coursefeedbackid' => $feedbackid,
                 'questionid' => $question->questionid], 'id', 'id,textanswer');
             foreach($answers as $answer) {
-                array_push($answerdata,$course->idnumber,block_coursefeedback_format_essay($answer->textanswer));
-		$this->csvexportwriter->add_data($answerdata);
+                $coursedata = [$course->idnumber,block_coursefeedback_format_essay($answer->textanswer)];
+		$this->csvexportwriter->add_data(array_merge($answerdata,$coursedata));
                 //$this->csvexportwriter->add_data($answersdata);
             }
-            $this->csvexportwriter->add_data([]);
+            //$this->csvexportwriter->add_data([]);
         }
 
         // Start the download
@@ -254,7 +254,7 @@ class ranking_exporter {
         foreach ($questions as $question) {
             $courses = block_coursefeedback_get_courserankings($question->questionid, $feedbackid);
             $answerdata = [++$questionnumber];
-            $answerdata[] = $question->question;
+            $answerdata[] = block_coursefeedback_format_essay($question->question);
             foreach ($courses as $course) {
                 // Forces to select some fields, since the sql query is hard-coded
                 $coursedata = [$course->idnumber];
@@ -296,13 +296,13 @@ class ranking_exporter {
         // Output header
         $data = [];
         array_push($data,'Question number', get_string('download_thead_questions','block_coursefeedback'),
-        get_string('course'));
+        get_string('course'), 'Answer');
         $this->csvexportwriter->add_data($data);
         // Insert all textanswers for each question.
         $questionnumber = 0;
         foreach ($questions as $question) {
-            $answerdata[] = ++$questionnumber;
-            $answerdata[] = format_string($question->question);
+            $answerdata = [++$questionnumber];
+            $answerdata[] = block_coursefeedback_format_essay($question->question);
             /*$questiondata = [
                 'Course',get_string("download_thead_questions", "block_coursefeedback")
                 ." id: ",
